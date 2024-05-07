@@ -168,7 +168,7 @@ public class Server : MonoBehaviour
     }
 
     // 클라이언트들에게 브로드캐스팅함
-    void Broadcast(string data, List<ServerClient> cl)
+    public void Broadcast(string data, List<ServerClient> cl)
     {
         foreach (var c in cl)
         {

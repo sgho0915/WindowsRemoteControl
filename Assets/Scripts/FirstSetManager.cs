@@ -56,7 +56,7 @@ public class FirstSetManager : MonoBehaviour
 
     private void Start()
     {
-        if (ConfigManager.instance.LoadIsFirst() == false)
+        if (ConfigManager.instance.LoadIsFirst() == true)
         {
             screenClient.SetActive(false);
             screenServer.SetActive(false);
@@ -70,9 +70,9 @@ public class FirstSetManager : MonoBehaviour
                 Server.instance.ServerCreate();
                 screenServer.SetActive(true);
                 screenWelcome.SetActive(false);
+                return;
             }
-
-            if (ConfigManager.instance.LoadIsClient() == true)
+            else if (ConfigManager.instance.LoadIsClient() == true)
             {
                 // 초기 세팅 마친 클라이언트면 메인화면 진입
                 Client.instance.hostPort = 7777.ToString();
@@ -103,7 +103,7 @@ public class FirstSetManager : MonoBehaviour
         btnServer.onClick.AddListener(() =>
         {
             Server.instance.ServerCreate();
-            ConfigManager.instance.UpdateIsFirst(true);
+            ConfigManager.instance.UpdateIsFirst(false);
             ConfigManager.instance.UpdateIsServer(true);
             ConfigManager.instance.UpdateIsClient(false);
 

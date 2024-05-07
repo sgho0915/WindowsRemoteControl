@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "22\uBC88 \uCCB4\uD5D8\uAE30"
+  m_text: "\uC7A5\uBE44\uBA85"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 69fee9f08905f4d48ba9b377dd31b8ea, type: 2}
   m_sharedMaterial: {fileID: -7761888315321132992, guid: 69fee9f08905f4d48ba9b377dd31b8ea, type: 2}
@@ -366,7 +366,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 192.168.0.222
+  m_text: Client IP
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1dc1854b82ea2304689bcf9407a871e3, type: 2}
   m_sharedMaterial: {fileID: -8359134466034993899, guid: 1dc1854b82ea2304689bcf9407a871e3, type: 2}
@@ -537,7 +537,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: E0-EF-25-01-54-C5
+  m_text: Client MAC
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 1dc1854b82ea2304689bcf9407a871e3, type: 2}
   m_sharedMaterial: {fileID: -8359134466034993899, guid: 1dc1854b82ea2304689bcf9407a871e3, type: 2}

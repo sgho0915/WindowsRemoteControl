@@ -13,75 +13,94 @@ using System.Collections;
 using UnityEditor;
 using System.Text;
 using System.Net.Mail;
+using System.Linq;
 
 public class ControlManager : MonoBehaviour
 {
     // 모든 원격제어될 PC들은 동일 네트워크망에 존재해야 함
     // 제어될 모든 PC들의 MAC Address를 알아야 함
     // 제어될 모든 PC들의 내부 IP를 DHCP로 고정시켜야 함
-    public byte[] m_MacAddress; // 원격으로 제어할 PC의 MAC 주소입니다. 6자리 물리적 주소를 저장합니다.
+    public static ControlManager Instance;
+
     public Button btnTurnOnPC;
     public Button btnTurnOffPC;
-    public TMP_InputField inputfield_MacAddr;
-    public static ControlManager Instance;
+    public Button btnPlayProg;
+    public Button btnStopProg;
+    public Button btnSelectAllClients;
+
 
     private void Awake()
     {
         Instance = this;
 
-        //btnTurnOnPC.onClick.RemoveAllListeners();
-        //btnTurnOnPC.onClick.AddListener(() =>
-        //{
-        //    string macAddr = inputfield_MacAddr.text;
-        //    byte[] macBytes = ParseMacAddress(macAddr);
-        //    if (macBytes != null)
-        //    {
-        //        TurnOnPC(macBytes);
-        //    }
-        //    else
-        //    {
-        //        Debug.LogError("Invalid MAC address format.");
-        //    }
-        //});
+        // 선택 클라이언트의 프로그램 실행
+        btnPlayProg.onClick.RemoveAllListeners();
+        btnPlayProg.onClick.AddListener(() =>
+        {
+            string macAddresses = string.Join(",", ServerManager.instance.selectedClientMACAddr.Where(pair => pair.Value).Select(pair => pair.Key));
+            Server.instance.Broadcast($"%CMDPLAY|{macAddresses}", Server.instance.clients);
+        });
 
-        //btnTurnOffPC.onClick.RemoveAllListeners();
-        //btnTurnOffPC.onClick.AddListener(() =>
-        //{
-        //    string macAddr = inputfield_MacAddr.text;
-        //    byte[] macBytes = ParseMacAddress(macAddr);
-        //    if (macBytes != null)
-        //    {
-        //        TurnOffPC(macBytes);
-        //    }
-        //    else
-        //    {
-        //        Debug.LogError("Invalid MAC address format.");
-        //    }
-        //});
+        // 선택 클라이언트의 프로그램 종료
+        btnStopProg.onClick.RemoveAllListeners();
+        btnStopProg.onClick.AddListener(() =>
+        {
+            string macAddresses = string.Join(",", ServerManager.instance.selectedClientMACAddr.Where(pair => pair.Value).Select(pair => pair.Key));
+            Server.instance.Broadcast($"%CMDSTOP|{macAddresses}", Server.instance.clients);
+        });
+
+        // 선택 클라이언트의 PC ON
+        btnTurnOnPC.onClick.RemoveAllListeners();
+        btnTurnOnPC.onClick.AddListener(() =>
+        {
+            string macAddresses = string.Join(",", ServerManager.instance.selectedClientMACAddr.Where(pair => pair.Value).Select(pair => pair.Key));
+            Server.instance.Broadcast($"%CMDON|{macAddresses}", Server.instance.clients);
+        });
+
+        // 선택 클라이언트의 PC OFF
+        btnTurnOffPC.onClick.RemoveAllListeners();
+        btnTurnOffPC.onClick.AddListener(() =>
+        {
+            string macAddresses = string.Join(",", ServerManager.instance.selectedClientMACAddr.Where(pair => pair.Value).Select(pair => pair.Key));
+            Server.instance.Broadcast($"%CMDOFF|{macAddresses}", Server.instance.clients);
+        });
+
+        // 전체선택
+        btnSelectAllClients.onClick.RemoveAllListeners();
+        btnSelectAllClients.onClick.AddListener(() =>
+        {
+            foreach (var clientInstance in ServerManager.instance.clientInstances)
+            {
+                Toggle toggle = clientInstance.Value.transform.Find("Toggle").GetComponent<Toggle>();
+                if (!toggle.interactable)
+                    continue;
+                else
+                    toggle.isOn = !toggle.isOn;
+            }
+        });
     }
 
     #region 원격 PC 전원 ON / OFF
-    //// TurnOnPC 메소드는 주어진 MAC 주소를 사용하여 네트워크를 통해 PC를 켜는 Magic Packet을 보냅니다.
     //void TurnOnPC(byte[] macAddress)
     //{
     //    UdpClient client = new UdpClient();
-    //    client.Connect(IPAddress.Broadcast, 40000); // UDP를 통해 네트워크의 모든 디바이스에 브로드캐스트합니다.
+    //    client.Connect(IPAddress.Broadcast, 40000); // UDP를 통해 네트워크의 모든 디바이스에 브로드캐스트
 
     //    byte[] packet = new byte[17 * 6]; // Magic Packet 생성
 
-    //    for (int i = 0; i < 6; i++) // 패킷의 첫 6바이트는 FF로 설정합니다.
+    //    for (int i = 0; i < 6; i++) // 패킷의 첫 6바이트는 FF로 설정
     //    {
     //        packet[i] = 0xFF;
     //    }
 
-    //    for (int i = 1; i <= 16; i++) // MAC 주소를 16번 반복하여 패킷에 추가합니다.
+    //    for (int i = 1; i <= 16; i++) // MAC 주소를 16번 반복하여 패킷에 추가
     //    {
     //        for (int j = 0; j < 6; j++)
     //        {
     //            packet[i * 6 + j] = macAddress[j];
     //        }
     //    }
-    //    client.Send(packet, packet.Length); // 패킷을 전송합니다.
+    //    client.Send(packet, packet.Length); // 패킷을 전송
     //    client.Close();
     //}
 
@@ -224,7 +243,7 @@ public class ControlManager : MonoBehaviour
     private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
     private void MinimizeWindow()
     {
-        ShowWindow(GetActiveWindow(), 2); // 2 is SW_MINIMIZE
+        ShowWindow(GetActiveWindow(), 2);
     }
 
     [DllImport("user32.dll")]

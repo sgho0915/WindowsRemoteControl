@@ -12,9 +12,12 @@ public class ServerManager : MonoBehaviour
     public static ServerManager instance;
 
     // 클라이언트 정보를 저장하는 딕셔너리
-    Dictionary<string, Dictionary<string, string>> clientDetails = new Dictionary<string, Dictionary<string, string>>();
+    public Dictionary<string, Dictionary<string, string>> clientDetails = new Dictionary<string, Dictionary<string, string>>();
     // 클라이언트 GameObject 인스턴스를 저장하는 딕셔너리
-    Dictionary<string, GameObject> clientInstances = new Dictionary<string, GameObject>();
+    public Dictionary<string, GameObject> clientInstances = new Dictionary<string, GameObject>();
+    // 토글이 선택된 클라이언트의 MAC 어드레스를 저장하는 딕셔너리
+    public Dictionary<string, bool> selectedClientMACAddr = new Dictionary<string, bool>();
+
     Coroutine updateRoutine = null;
     WaitForSeconds wait1 = new WaitForSeconds(1);
     public GameObject clientPrefab;
@@ -121,6 +124,16 @@ public class ServerManager : MonoBehaviour
                 GameObject clientInstance = Instantiate(clientPrefab, clientsScrollVeiwContent);
                 clientInstance.name = "Client_" + client.Value["MAC"];
                 clientInstances.Add(client.Key, clientInstance);
+
+                Toggle selectToggle = clientInstance.transform.Find("Toggle").GetComponent<Toggle>();
+                selectToggle.onValueChanged.RemoveAllListeners();
+                selectToggle.onValueChanged.AddListener((value) =>
+                {
+                    if (value)
+                        selectedClientMACAddr[client.Value["MAC"]] = true;
+                    else
+                        selectedClientMACAddr.Remove(client.Value["MAC"]);
+                });
             }
 
             // UI 업데이트
@@ -131,6 +144,7 @@ public class ServerManager : MonoBehaviour
             TextMeshProUGUI txtName = instance.transform.Find("txtEquipName").GetComponent<TextMeshProUGUI>();
             TextMeshProUGUI txtIP = instance.transform.Find("ClientInfo/txtClientIP").GetComponent<TextMeshProUGUI>();
             TextMeshProUGUI txtMAC = instance.transform.Find("ClientInfo/txtClientMAC").GetComponent<TextMeshProUGUI>();
+            Toggle selectedToggle = instance.transform.Find("Toggle").GetComponent<Toggle>();
 
             txtName.text = client.Value["Name"];
             txtIP.text = client.Value["IP"];
@@ -141,7 +155,7 @@ public class ServerManager : MonoBehaviour
             if (!Server.instance.serverStarted)
                 return;
 
-            ServerClient serverClient = Server.instance.clients.FirstOrDefault(c => c.clientIP == client.Value["MAC"]);
+            ServerClient serverClient = Server.instance.clients.FirstOrDefault(c => c.clientMAC == client.Value["MAC"]);
             if (serverClient != null)
             {
                 outline.effectColor = colorGreen;
@@ -153,6 +167,7 @@ public class ServerManager : MonoBehaviour
                 outline.effectColor = colorDarkGray;
                 background.color = colorGray;
                 toggle.interactable = false;
+                selectedToggle.isOn = false;
             }
         }
     }

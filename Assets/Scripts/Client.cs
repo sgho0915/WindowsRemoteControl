@@ -83,7 +83,7 @@ public class Client : MonoBehaviour
 
             if (socketReady)
             {
-                ConfigManager.instance.UpdateIsFirst(true);
+                ConfigManager.instance.UpdateIsFirst(false);
                 ConfigManager.instance.UpdateIsServer(false);
                 ConfigManager.instance.UpdateIsClient(true);
                 ConfigManager.instance.UpdateAutoStart(autoStart);
@@ -175,6 +175,8 @@ public class Client : MonoBehaviour
                     btntxt.text = "초기화 완료";
                     btntxt.DOColor(new Color32(240, 94, 51, 255), 1);  // 애니메이션 완료 후 텍스트 변경
                     btntxt.transform.DOShakePosition(1, strength: new Vector3(10, 0, 0), vibrato: 10, randomness: 90, snapping: false, fadeOut: true);
+
+                    Application.Quit();
                 });
             }            
         }
@@ -187,6 +189,7 @@ public class Client : MonoBehaviour
             Chat.instance.ShowMessage($"소켓에러 : {e.Message}");
         }
     }
+
 
     void Update()
     {
@@ -212,6 +215,34 @@ public class Client : MonoBehaviour
             clientName = clientName == string.Empty ? $"Guest{UnityEngine.Random.Range(1000, 10000)}" : clientName;
             Send($"&NAME|{clientName}");
             return;
+        }
+        else if(data.Contains("%CMDPLAY"))
+        {
+            // 선택된 클라이언트의 프로그램 실행
+            string[] parts = data.Split('|');
+            if (parts[1].Contains(clientMAC))
+                ControlManager.Instance.RunProcessByPath(execFilePath);
+        }
+        else if (data.Contains("%CMDSTOP"))
+        {
+            // 선택된 클라이언트의 프로그램 종료
+            string[] parts = data.Split('|');
+            if (parts[1].Contains(clientMAC))
+                ControlManager.Instance.KillProcessByPath(execFilePath);
+        }
+        else if (data.Contains("%CMDON"))
+        {
+            // 선택된 클라이언트의 PC ON
+            string[] parts = data.Split('|');
+            if (parts[1].Contains(clientMAC))
+                ControlManager.Instance.KillProcessByPath(execFilePath);
+        }
+        else if (data.Contains("%CMDOFF"))
+        {
+            // 선택된 클라이언트의 PC OFF
+            string[] parts = data.Split('|');
+            if (parts[1].Contains(clientMAC))
+                ControlManager.Instance.TurnOffPC();
         }
         Chat.instance.ShowMessage(data);
     }
