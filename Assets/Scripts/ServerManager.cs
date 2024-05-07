@@ -119,7 +119,7 @@ public class ServerManager : MonoBehaviour
             {
                 // 새 클라이언트 인스턴스 생성
                 GameObject clientInstance = Instantiate(clientPrefab, clientsScrollVeiwContent);
-                clientInstance.name = "Client_" + client.Value["IP"];
+                clientInstance.name = "Client_" + client.Value["MAC"];
                 clientInstances.Add(client.Key, clientInstance);
             }
 
@@ -141,7 +141,7 @@ public class ServerManager : MonoBehaviour
             if (!Server.instance.serverStarted)
                 return;
 
-            ServerClient serverClient = Server.instance.clients.FirstOrDefault(c => c.clientIP == client.Value["IP"]);
+            ServerClient serverClient = Server.instance.clients.FirstOrDefault(c => c.clientIP == client.Value["MAC"]);
             if (serverClient != null)
             {
                 outline.effectColor = colorGreen;

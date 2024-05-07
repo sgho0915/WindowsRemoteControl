@@ -52,13 +52,11 @@ public class FirstSetManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
-        PlayerPrefs.DeleteAll();       
     }
 
     private void Start()
     {
-        if (PlayerPrefs.GetInt("ISFIRST", 0) == 0)
+        if (ConfigManager.instance.LoadIsFirst() == false)
         {
             screenClient.SetActive(false);
             screenServer.SetActive(false);
@@ -66,23 +64,24 @@ public class FirstSetManager : MonoBehaviour
         }
         else
         {
-            if (PlayerPrefs.GetInt("ISSERVER", 0) == 1)
+            if (ConfigManager.instance.LoadIsServer() == true)
             {
                 // 초기 세팅 마친 서버면 메인화면 진입
                 Server.instance.ServerCreate();
                 screenServer.SetActive(true);
                 screenWelcome.SetActive(false);
             }
-            if (PlayerPrefs.GetInt("ISCLIENT", 0) == 1)
+
+            if (ConfigManager.instance.LoadIsClient() == true)
             {
                 // 초기 세팅 마친 클라이언트면 메인화면 진입
                 Client.instance.hostPort = 7777.ToString();
-                if (PlayerPrefs.GetInt("ISFIRST", 0) == 1)
+                if (ConfigManager.instance.LoadIsFirst() == true)
                 {
-                    Client.instance.hostIP = PlayerPrefs.GetString("HostIP");
-                    Client.instance.execFilePath = PlayerPrefs.GetString("FilePath");
-                    Client.instance.clientName = PlayerPrefs.GetString("ClientName");
-                    Client.instance.autoStart = PlayerPrefs.GetInt("AutoStart") == 1 ? 1 : 0;
+                    Client.instance.hostIP = ConfigManager.instance.LoadHostIP();
+                    Client.instance.execFilePath = ConfigManager.instance.LoadFilePath();
+                    Client.instance.clientName = ConfigManager.instance.LoadClientName();
+                    Client.instance.autoStart = ConfigManager.instance.LoadAutoStart();
                 }
                 Client.instance.clientIP = GetIPAddress();
                 Client.instance.clientMAC = GetMacAddress();
@@ -104,10 +103,10 @@ public class FirstSetManager : MonoBehaviour
         btnServer.onClick.AddListener(() =>
         {
             Server.instance.ServerCreate();
-            PlayerPrefs.SetInt("ISFIRST", 1);
-            PlayerPrefs.SetInt("ISSERVER", 1);
-            PlayerPrefs.SetInt("ISCLIENT", 0);
-            PlayerPrefs.Save();
+            ConfigManager.instance.UpdateIsFirst(true);
+            ConfigManager.instance.UpdateIsServer(true);
+            ConfigManager.instance.UpdateIsClient(false);
+
             screenServer.SetActive(true);
             screenWelcome.SetActive(false);
         });
@@ -205,25 +204,6 @@ public class FirstSetManager : MonoBehaviour
             }
         }
         return "No Ethernet NIC found";
-    }
-
-    public void ExecuteFile()
-    {
-        if (string.IsNullOrEmpty(selectedFilePath))
-        {
-            return;
-        }
-
-        try
-        {
-            Process process = new Process();
-            process.StartInfo.FileName = selectedFilePath.TrimEnd('\n'); // Remove any newline characters
-            process.StartInfo.UseShellExecute = true;
-            process.Start();
-        }
-        catch (Exception e)
-        {
-        }
     }
 
     public string WriteResult(string[] paths)

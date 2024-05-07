@@ -25057,14 +25057,15 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2140582487}
-  - component: {fileID: 2140582491}
-  - component: {fileID: 2140582494}
   - component: {fileID: 2140582493}
+  - component: {fileID: 2140582491}
   - component: {fileID: 2140582495}
   - component: {fileID: 2140582498}
   - component: {fileID: 2140582497}
   - component: {fileID: 2140582496}
   - component: {fileID: 2140582499}
+  - component: {fileID: 2140582500}
+  - component: {fileID: 2140582501}
   m_Layer: 0
   m_Name: SYSTEM_MANAGER
   m_TagString: Untagged
@@ -25128,18 +25129,6 @@ MonoBehaviour:
   GUIFontSize: 15
   GUIColor: {r: 0, g: 0, b: 0, a: 0.627451}
   DoNotDestroyOnLoad: 0
---- !u!114 &2140582494
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2140582485}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 73639c723e0cc4d4f8eb5e11565d838b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &2140582495
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25199,6 +25188,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   hostPort: 
+  serverStarted: 0
 --- !u!114 &2140582498
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -25246,6 +25236,34 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   clientPrefab: {fileID: 7524303865170630728, guid: 5b86e20b4c355a544adb300030ed1119, type: 3}
   clientsScrollVeiwContent: {fileID: 1796563951}
+--- !u!114 &2140582500
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2140582485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f44373bfd3edc574c87e2c11bc9dd208, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2140582501
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2140582485}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4ea1dcdef04d11a40b3081af8b71af2b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_MacAddress: 
+  btnTurnOnPC: {fileID: 0}
+  btnTurnOffPC: {fileID: 0}
+  inputfield_MacAddr: {fileID: 0}
 --- !u!1 &2142699281
 GameObject:
   m_ObjectHideFlags: 0

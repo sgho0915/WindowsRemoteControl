@@ -33,7 +33,6 @@ public class Server : MonoBehaviour
 
         try
         {
-            //int port = PortInput.text == "" ? 7777 : int.Parse(PortInput.text);
             int port = hostPort == string.Empty ? 7777 : int.Parse(hostPort);
             server = new TcpListener(IPAddress.Any, port);
             server.Start();
@@ -142,7 +141,7 @@ public class Server : MonoBehaviour
             string[] parts = data.Split('|');
             if (parts.Length == 5)
             {
-                string clientId = parts[2];
+                string clientId = parts[3];
                 c.clientName = parts[1];
                 c.clientIP = parts[2];
                 c.clientMAC = parts[3];

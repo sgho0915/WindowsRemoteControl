@@ -21,7 +21,7 @@ public class Client : MonoBehaviour
     public string clientIP;
     public string clientMAC;
     public bool socketReady;
-    public int autoStart;
+    public bool autoStart;
     public GameObject screenDebug;
 
     // 상태 및 정보
@@ -83,16 +83,16 @@ public class Client : MonoBehaviour
 
             if (socketReady)
             {
-                PlayerPrefs.SetInt("ISFIRST", 1);
-                PlayerPrefs.SetInt("ISSERVER", 0);
-                PlayerPrefs.SetInt("ISCLIENT", 1);
-                PlayerPrefs.SetString("HostIP", hostIP);
-                PlayerPrefs.SetString("FilePath", execFilePath);
-                PlayerPrefs.SetString("ClientIPAddr", clientIP);
-                PlayerPrefs.SetString("ClientMACAddr", clientMAC);
-                PlayerPrefs.SetString("ClientName", clientName);
-                PlayerPrefs.SetInt("AutoStart", autoStart);
-                PlayerPrefs.Save();
+                ConfigManager.instance.UpdateIsFirst(true);
+                ConfigManager.instance.UpdateIsServer(false);
+                ConfigManager.instance.UpdateIsClient(true);
+                ConfigManager.instance.UpdateAutoStart(autoStart);
+                ConfigManager.instance.UpdateHostIP(hostIP);
+                ConfigManager.instance.UpdateClientIP(clientIP);
+                ConfigManager.instance.UpdateClientMAC(clientMAC);
+                ConfigManager.instance.UpdateClientName(clientName);
+                ConfigManager.instance.UpdateFilePath(execFilePath);
+
                 FirstSetManager.Instance.screenClient.SetActive(true);
                 FirstSetManager.Instance.screenWelcome.SetActive(false);
 
@@ -102,7 +102,7 @@ public class Client : MonoBehaviour
                 txtFilePath.text = execFilePath;
                 inputField_EquipName.text = clientName;
                 inputField_HostIP.text = hostIP;
-                toggle_AutoStart.isOn = autoStart == 1 ? true : false;
+                toggle_AutoStart.isOn = autoStart;
                 
                 btnFileSelect.onClick.RemoveAllListeners();
                 btnFileSelect.onClick.AddListener(() =>
@@ -113,15 +113,14 @@ public class Client : MonoBehaviour
                         execFilePath = tempPath;
                         txtFilePath.text = execFilePath;
                     }
-                    PlayerPrefs.SetString("FilePath", execFilePath);
-                    PlayerPrefs.Save();
+                    ConfigManager.instance.UpdateFilePath(execFilePath);
                 });
 
                 btnSaveSettings.onClick.RemoveAllListeners();
                 btnSaveSettings.onClick.AddListener(() =>
                 {
                     TextMeshProUGUI btntxt = btnSaveSettings.gameObject.transform.Find("Text (TMP)").GetComponent<TextMeshProUGUI>();
-                    if (socketReady && socket != null && socket.Connected && PlayerPrefs.GetString("HostIP") != inputField_HostIP.text)
+                    if (socketReady && socket != null && socket.Connected && ConfigManager.instance.LoadHostIP() != inputField_HostIP.text)
                     {
                         btntxt.text = "서버 연결을 먼저 종료해주세요";
                         btntxt.DOColor(new Color32(240, 94, 51, 255), 1)
@@ -140,11 +139,11 @@ public class Client : MonoBehaviour
                     {
                         hostIP = inputField_HostIP.text;
                         clientName = inputField_EquipName.text;
-                        autoStart = toggle_AutoStart.isOn == true ? 1 : 0;
-                        PlayerPrefs.SetString("HostIP", hostIP);
-                        PlayerPrefs.SetString("ClientName", clientName);
-                        PlayerPrefs.SetInt("AutoStart", autoStart);
-                        PlayerPrefs.Save();
+                        autoStart = toggle_AutoStart.isOn;
+                        ConfigManager.instance.UpdateAutoStart(autoStart); // 자동시작 값 저장
+                        //ControlManager.Instance.SetAutoStart(autoStart); // 자동시작 적용(현재는 비활성화)
+                        ConfigManager.instance.UpdateHostIP(hostIP);
+                        ConfigManager.instance.UpdateClientName(clientName);
 
                         btntxt.text = "저장되었습니다";
                         btntxt.DOColor(new Color32(116, 178, 8, 255), 1)
@@ -170,7 +169,8 @@ public class Client : MonoBehaviour
                 btnResetSettings.onClick.AddListener(() =>
                 {
                     CloseSocket();
-                    PlayerPrefs.DeleteAll();
+                    ConfigManager.instance.ResetConfig();
+
                     TextMeshProUGUI btntxt = btnResetSettings.gameObject.transform.Find("Text (TMP)").GetComponent<TextMeshProUGUI>();
                     btntxt.text = "초기화 완료";
                     btntxt.DOColor(new Color32(240, 94, 51, 255), 1);  // 애니메이션 완료 후 텍스트 변경
